@@ -10,7 +10,7 @@ export class CityService {
   async remove(id: number): Promise<{ message: string }> {
     try {
       const city = await CityEntity.findOne({ where: { id } });
-      await CityEntity.remove(city);
+      await city.remove();
     } catch (err) {
       throw new BadRequestException(err.message);
     }

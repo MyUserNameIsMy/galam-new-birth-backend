@@ -1,26 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
-import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { OrganizationEntity } from './entities/organization.entity';
+import { CityEntity } from '../city/entities/city.entity';
+import { Point } from 'typeorm';
+import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
 
 @Injectable()
 export class OrganizationService {
-  create(createOrganizationDto: CreateOrganizationDto) {
-    return 'This action adds a new organization';
+  async create(
+    createOrganizationDto: CreateOrganizationDto,
+    photo: Express.Multer.File,
+  ): Promise<OrganizationEntity> {
+    const city = await CityEntity.findOne({
+      where: { id: createOrganizationDto.city_id },
+    });
+    if (!city) throw new BadRequestException('No such City');
+
+    try {
+      const organization = new OrganizationEntity();
+      const location: Point = {
+        type: 'Point',
+        coordinates: [createOrganizationDto.lon, createOrganizationDto.lat],
+      };
+      console.log(photo);
+      organization.name = createOrganizationDto.name;
+      organization.phone = createOrganizationDto.phone;
+      organization.email = createOrganizationDto.email;
+      organization.about = createOrganizationDto.about;
+      organization.city = city;
+      organization.address = createOrganizationDto.address;
+      organization.location = location;
+      if (photo?.path) organization.photo_path = photo.path;
+
+      return await organization.save();
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all organization`;
+  async findAll(): Promise<OrganizationEntity[]> {
+    return await OrganizationEntity.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} organization`;
+  async findOne(id: number): Promise<OrganizationEntity> {
+    return await OrganizationEntity.findOne({ where: { id } });
   }
 
-  update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
-    return `This action updates a #${id} organization`;
+  //TODO: add status flow check
+  async updateStatus(
+    id: number,
+    updateOrganizationStatusDto: UpdateOrganizationStatusDto,
+  ): Promise<OrganizationEntity> {
+    try {
+      const organization = await OrganizationEntity.findOne({ where: { id } });
+      organization.status = updateOrganizationStatusDto.status;
+      return await organization.save();
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} organization`;
+  async remove(id: number): Promise<{ message: string }> {
+    const organization = await OrganizationEntity.findOne({ where: { id } });
+    if (!organization) throw new BadRequestException('No such organization');
+    try {
+      await organization.remove();
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
+    return {
+      message: 'Successfully deleted',
+    };
+  }
+
+  async getPhoto(id: number): Promise<string> {
+    try {
+      const organization = await OrganizationEntity.findOne({ where: { id } });
+      return organization.photo_path;
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 }
