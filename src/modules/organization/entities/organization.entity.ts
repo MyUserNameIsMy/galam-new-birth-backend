@@ -1,5 +1,7 @@
-import { Column, Entity, Point } from 'typeorm';
+import { Column, Entity, ManyToOne, Point } from 'typeorm';
 import { RootAbstractEntity } from '../../../database/entities/root-abstract.entity';
+import { CityEntity } from '../../city/entities/city.entity';
+import { OrganizationStatusEnum } from '../../../common/enums/organization-status.enum';
 
 @Entity('organizations')
 export class OrganizationEntity extends RootAbstractEntity {
@@ -23,4 +25,16 @@ export class OrganizationEntity extends RootAbstractEntity {
 
   @Column({ type: 'varchar', length: 500, nullable: true })
   photo_path: string;
+
+  @Column({
+    type: 'enum',
+    enum: OrganizationStatusEnum,
+    default: OrganizationStatusEnum.NEW,
+  })
+  status: OrganizationStatusEnum;
+
+  @ManyToOne(() => CityEntity, (city) => city.organizations, {
+    onDelete: 'CASCADE',
+  })
+  city: CityEntity;
 }

@@ -68,7 +68,7 @@ export class CountryService {
   async remove(id: number): Promise<{ message: string }> {
     try {
       const country = await CountryEntity.findOne({ where: { id } });
-      await CountryEntity.remove(country);
+      await country.remove();
     } catch (err) {
       throw new BadRequestException(err.message);
     }
