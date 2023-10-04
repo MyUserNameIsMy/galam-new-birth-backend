@@ -7,6 +7,8 @@ import { getOrmAsyncConfig } from './config/orm-async.config';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { CountryModule } from './modules/country/country.module';
 import { CityModule } from './modules/city/city.module';
+import { CourseModule } from './modules/course/course.module';
+import { CoursePublicationModule } from './modules/course-publication/course-publication.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { CityModule } from './modules/city/city.module';
     OrganizationModule,
     CountryModule,
     CityModule,
+    CourseModule,
+    CoursePublicationModule,
   ],
   controllers: [],
   providers: [],

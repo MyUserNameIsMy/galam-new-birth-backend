@@ -11,12 +11,10 @@ export class OrganizationService {
     createOrganizationDto: CreateOrganizationDto,
     photo: Express.Multer.File,
   ): Promise<OrganizationEntity> {
-    const city = await CityEntity.findOne({
-      where: { id: createOrganizationDto.city_id },
-    });
-    if (!city) throw new BadRequestException('No such City');
-
     try {
+      const city = await CityEntity.findOneOrFail({
+        where: { id: createOrganizationDto.city_id },
+      });
       const organization = new OrganizationEntity();
       const location: Point = {
         type: 'Point',
@@ -43,7 +41,7 @@ export class OrganizationService {
   }
 
   async findOne(id: number): Promise<OrganizationEntity> {
-    return await OrganizationEntity.findOne({ where: { id } });
+    return await OrganizationEntity.findOneOrFail({ where: { id } });
   }
 
   //TODO: add status flow check
@@ -52,7 +50,9 @@ export class OrganizationService {
     updateOrganizationStatusDto: UpdateOrganizationStatusDto,
   ): Promise<OrganizationEntity> {
     try {
-      const organization = await OrganizationEntity.findOne({ where: { id } });
+      const organization = await OrganizationEntity.findOneOrFail({
+        where: { id },
+      });
       organization.status = updateOrganizationStatusDto.status;
       return await organization.save();
     } catch (err) {
@@ -61,9 +61,10 @@ export class OrganizationService {
   }
 
   async remove(id: number): Promise<{ message: string }> {
-    const organization = await OrganizationEntity.findOne({ where: { id } });
-    if (!organization) throw new BadRequestException('No such organization');
     try {
+      const organization = await OrganizationEntity.findOneOrFail({
+        where: { id },
+      });
       await organization.remove();
     } catch (err) {
       throw new BadRequestException(err.message);
@@ -75,7 +76,9 @@ export class OrganizationService {
 
   async getPhoto(id: number): Promise<string> {
     try {
-      const organization = await OrganizationEntity.findOne({ where: { id } });
+      const organization = await OrganizationEntity.findOneOrFail({
+        where: { id },
+      });
       return organization.photo_path;
     } catch (err) {
       throw new BadRequestException(err.message);

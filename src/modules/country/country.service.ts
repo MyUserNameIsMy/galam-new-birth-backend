@@ -36,10 +36,6 @@ export class CountryService {
     };
   }
 
-  create(createCountryDto: CreateCountryDto) {
-    return 'This action adds a new country';
-  }
-
   async findAll(): Promise<CountryEntity[]> {
     return await CountryEntity.find({
       relations: ['cities'],
@@ -47,10 +43,14 @@ export class CountryService {
   }
 
   async findOne(id: number): Promise<CountryEntity> {
-    return await CountryEntity.findOne({
-      where: { id },
-      relations: ['cities'],
-    });
+    try {
+      return await CountryEntity.findOneOrFail({
+        where: { id },
+        relations: ['cities'],
+      });
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   async removeAll(): Promise<{ message: string }> {
@@ -67,7 +67,7 @@ export class CountryService {
 
   async remove(id: number): Promise<{ message: string }> {
     try {
-      const country = await CountryEntity.findOne({ where: { id } });
+      const country = await CountryEntity.findOneOrFail({ where: { id } });
       await country.remove();
     } catch (err) {
       throw new BadRequestException(err.message);
