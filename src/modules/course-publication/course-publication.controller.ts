@@ -1,34 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CoursePublicationService } from './course-publication.service';
 import { CreateCoursePublicationDto } from './dto/create-course-publication.dto';
 import { UpdateCoursePublicationDto } from './dto/update-course-publication.dto';
+import { CoursePublicationEntity } from './entities/course-publication.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Course publication')
 @Controller('course-publication')
 export class CoursePublicationController {
-  constructor(private readonly coursePublicationService: CoursePublicationService) {}
+  constructor(
+    private readonly coursePublicationService: CoursePublicationService,
+  ) {}
 
   @Post()
-  create(@Body() createCoursePublicationDto: CreateCoursePublicationDto) {
-    return this.coursePublicationService.create(createCoursePublicationDto);
+  async create(@Body() createCoursePublicationDto: CreateCoursePublicationDto) {
+    return await this.coursePublicationService.create(
+      createCoursePublicationDto,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.coursePublicationService.findAll();
+  async findAll(): Promise<CoursePublicationEntity[]> {
+    return await this.coursePublicationService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.coursePublicationService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<CoursePublicationEntity> {
+    return await this.coursePublicationService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCoursePublicationDto: UpdateCoursePublicationDto) {
-    return this.coursePublicationService.update(+id, updateCoursePublicationDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateCoursePublicationDto: UpdateCoursePublicationDto,
+  ): Promise<{ message: string }> {
+    return await this.coursePublicationService.updateStatus(
+      +id,
+      updateCoursePublicationDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.coursePublicationService.remove(+id);
+  async remove(@Param('id') id: string): Promise<{ message: string }> {
+    return await this.coursePublicationService.remove(+id);
   }
 }
