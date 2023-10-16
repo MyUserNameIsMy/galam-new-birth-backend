@@ -210,7 +210,7 @@ export class CoursePublicationService {
               ? { id: In(course_categories.map((item) => item.id)) }
               : {},
             ...(filter?.course_types
-              ? { course_types: In(filter.course_types) }
+              ? { course_type: In(filter.course_types) }
               : {}),
           },
           week_days: week_days

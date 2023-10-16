@@ -38,6 +38,7 @@ export class CoursePublicationController {
 
   @Get('open-recruitment')
   async findAllOpen(
+    @Query() filter: CoursePublicationFilterDto,
     @Query('page') page = 0,
     @Query('limit') limit = 5,
   ): Promise<{
@@ -45,7 +46,10 @@ export class CoursePublicationController {
     page: number;
     limit: number;
   }> {
-    return await this.coursePublicationService.findAllOpen(page, limit);
+    console.log(filter);
+    console.log(page);
+    console.log(limit);
+    return await this.coursePublicationService.findAllOpen(filter, page, limit);
   }
 
   @Get(':id')
