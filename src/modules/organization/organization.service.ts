@@ -5,6 +5,7 @@ import { CityEntity } from '../city/entities/city.entity';
 import { Point } from 'typeorm';
 import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
 import { UserEntity } from '../user/entities/user.entity';
+import { UPLOAD_URL } from '../../common/constants/url.constant';
 
 @Injectable()
 export class OrganizationService {
@@ -48,7 +49,12 @@ export class OrganizationService {
   }
 
   async findAll(): Promise<OrganizationEntity[]> {
-    return await OrganizationEntity.find();
+    const organizations = await OrganizationEntity.find();
+    organizations.forEach(
+      (item) =>
+        (item.photo_path = (UPLOAD_URL + item.photo_path).replace(/\\/g, '/')),
+    );
+    return organizations;
   }
 
   async findOne(id: number): Promise<OrganizationEntity> {

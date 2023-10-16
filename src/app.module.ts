@@ -16,6 +16,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { WeekDayEnum } from './common/enums/week-day.enum';
 import { WeekDayEntity } from './database/entities/week-day.entity';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { WeekDayEntity } from './database/entities/week-day.entity';
     CoursePublicationModule,
     UserModule,
     AuthModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],

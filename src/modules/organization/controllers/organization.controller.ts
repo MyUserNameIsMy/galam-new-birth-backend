@@ -76,16 +76,6 @@ export class OrganizationController {
     return await this.organizationService.findOne(+id);
   }
 
-  @Get(':id/photo')
-  async getPhoto(@Param('id') id: string, @Res() res: Response) {
-    const photo_path: string | null = await this.organizationService.getPhoto(
-      +id,
-    );
-    if (!photo_path) throw new BadRequestException('No photo');
-
-    res.sendFile(path.join(__dirname, '../../../', photo_path));
-  }
-
   @Patch(':id')
   async updateStatus(
     @Param('id') id: string,
