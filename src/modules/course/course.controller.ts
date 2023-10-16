@@ -7,11 +7,10 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { CourseService } from './course.service';
+import { CourseService } from './services/course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { CourseEntity } from './entities/course.entity';
-import { UpdateResult } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Course')

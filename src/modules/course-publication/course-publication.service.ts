@@ -11,6 +11,7 @@ import { CourseScheduleEntity } from './entities/course-schedule.entity';
 import { CoursePublicationFilterDto } from './dto/course-publication-filter.dto';
 import { WeekDayEntity } from '../../database/entities/week-day.entity';
 import { CoursePublicationStatusEnum } from '../../common/enums/course-publication-status.enum';
+import { CourseCategoryEntity } from '../course/entities/course-category.entity';
 
 @Injectable()
 export class CoursePublicationService {
@@ -139,6 +140,41 @@ export class CoursePublicationService {
   async findAll(
     filter: CoursePublicationFilterDto,
   ): Promise<CoursePublicationEntity[]> {
+    console.table(filter);
+    try {
+      let week_days = null;
+      if (filter?.week_days) {
+        week_days = await WeekDayEntity.find({
+          where: {
+            week_day: In(filter.week_days),
+          },
+        });
+      }
+      console.log(week_days);
+      return await CoursePublicationEntity.find({
+        relations: [
+          'course_schedules',
+          'course',
+          'course.organization',
+          'course.organization.city',
+        ],
+        where: {
+          course: {
+            organization: {
+              city: filter?.city_ids ? { id: In(filter.city_ids) } : {},
+            },
+          },
+          week_days: week_days
+            ? { id: In(week_days.map((item) => item.id)) }
+            : {},
+        },
+      });
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  async findAllOpen(filter: CoursePublicationFilterDto, page = 0, limit = 5) {
     let week_days = null;
     if (filter?.week_days) {
       week_days = await WeekDayEntity.find({
@@ -147,37 +183,39 @@ export class CoursePublicationService {
         },
       });
     }
-
-    console.log(filter.city_ids);
-    return await CoursePublicationEntity.find({
-      relations: [
-        'course_schedules',
-        'course_schedules.lesson_intervals',
-        'course',
-        'course.organization',
-      ],
-      where: {
-        course: {
-          organization: {
-            city: filter?.city_ids ? { id: In(filter.city_ids) } : {},
-          },
+    let course_categories = null;
+    if (filter?.course_category_ids) {
+      course_categories = await CourseCategoryEntity.find({
+        where: {
+          id: In(filter.course_category_ids),
         },
-        week_days: week_days ? In(week_days.map((item) => item.id)) : {},
-      },
-    });
-  }
+      });
+    }
 
-  async findAllOpen(page = 0, limit = 5) {
     return {
       course_publications: await CoursePublicationEntity.find({
         relations: [
           'course_schedules',
-          'course_schedules.lesson_intervals',
           'course',
           'course.organization',
+          'course.organization.city',
         ],
         where: {
           status: CoursePublicationStatusEnum.OPEN_RECRUITMENT,
+          course: {
+            organization: {
+              city: filter?.city_ids ? { id: In(filter.city_ids) } : {},
+            },
+            course_category: course_categories
+              ? { id: In(course_categories.map((item) => item.id)) }
+              : {},
+            ...(filter?.course_types
+              ? { course_types: In(filter.course_types) }
+              : {}),
+          },
+          week_days: week_days
+            ? { id: In(week_days.map((item) => item.id)) }
+            : {},
         },
         ...(page && limit
           ? {
