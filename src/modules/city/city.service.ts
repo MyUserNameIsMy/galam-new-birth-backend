@@ -3,8 +3,16 @@ import { CityEntity } from './entities/city.entity';
 
 @Injectable()
 export class CityService {
+  async findAll(): Promise<CityEntity[]> {
+    return await CityEntity.find();
+  }
+
   async findOne(id: number): Promise<CityEntity> {
-    return await CityEntity.findOne({ where: { id } });
+    try {
+      return await CityEntity.findOneOrFail({ where: { id } });
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   async remove(id: number): Promise<{ message: string }> {

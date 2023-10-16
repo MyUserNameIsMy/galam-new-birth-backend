@@ -9,7 +9,6 @@ export class CountryEntity extends RootAbstractEntity {
 
   @OneToMany(() => CityEntity, (city) => city.country, {
     cascade: true,
-    lazy: true,
   })
   cities: CityEntity[];
 }

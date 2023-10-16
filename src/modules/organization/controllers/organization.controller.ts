@@ -10,20 +10,22 @@ import {
   Patch,
   Post,
   Res,
-  StreamableFile,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
-import { OrganizationService } from './organization.service';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { OrganizationService } from '../organization.service';
+import { CreateOrganizationDto } from '../dto/create-organization.dto';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { OrganizationEntity } from './entities/organization.entity';
-import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
+import { OrganizationEntity } from '../entities/organization.entity';
+import { UpdateOrganizationStatusDto } from '../dto/update-organization-status.dto';
 import type { Response } from 'express';
 import * as path from 'path';
 import { diskStorage } from 'multer';
 import { v4 as uuid } from 'uuid';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Organization')
 @Controller('organization')
@@ -31,6 +33,8 @@ export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt-user'))
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('photo', {
@@ -43,6 +47,7 @@ export class OrganizationController {
     }),
   )
   async create(
+    @Request() req,
     @Body() createOrganizationDto: CreateOrganizationDto,
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -54,7 +59,11 @@ export class OrganizationController {
     )
     photo: Express.Multer.File,
   ) {
-    return await this.organizationService.create(createOrganizationDto, photo);
+    return await this.organizationService.create(
+      createOrganizationDto,
+      photo,
+      req.user,
+    );
   }
 
   @Get()
@@ -65,16 +74,6 @@ export class OrganizationController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<OrganizationEntity> {
     return await this.organizationService.findOne(+id);
-  }
-
-  @Get(':id/photo')
-  async getPhoto(@Param('id') id: string, @Res() res: Response) {
-    const photo_path: string | null = await this.organizationService.getPhoto(
-      +id,
-    );
-    if (!photo_path) throw new BadRequestException('No photo');
-
-    res.sendFile(path.join(__dirname, '../../../', photo_path));
   }
 
   @Patch(':id')

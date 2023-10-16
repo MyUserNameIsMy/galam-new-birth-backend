@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, Point } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, Point } from 'typeorm';
 import { RootAbstractEntity } from '../../../database/entities/root-abstract.entity';
 import { CityEntity } from '../../city/entities/city.entity';
 import { OrganizationStatusEnum } from '../../../common/enums/organization-status.enum';
+import { CourseEntity } from '../../course/entities/course.entity';
 
 @Entity('organizations')
 export class OrganizationEntity extends RootAbstractEntity {
@@ -37,4 +38,9 @@ export class OrganizationEntity extends RootAbstractEntity {
     onDelete: 'CASCADE',
   })
   city: CityEntity;
+
+  @OneToMany(() => CourseEntity, (course) => course.organization, {
+    cascade: true,
+  })
+  courses: CourseEntity[];
 }
