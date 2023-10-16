@@ -55,8 +55,7 @@ export class CountryService {
 
   async removeAll(): Promise<{ message: string }> {
     try {
-      const countries = await CountryEntity.find();
-      await CountryEntity.remove(countries);
+      await CountryEntity.delete({});
     } catch (err) {
       throw new BadRequestException(err.message);
     }

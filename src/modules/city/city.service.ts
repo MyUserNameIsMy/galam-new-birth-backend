@@ -3,6 +3,10 @@ import { CityEntity } from './entities/city.entity';
 
 @Injectable()
 export class CityService {
+  async findAll(): Promise<CityEntity[]> {
+    return await CityEntity.find();
+  }
+
   async findOne(id: number): Promise<CityEntity> {
     try {
       return await CityEntity.findOneOrFail({ where: { id } });

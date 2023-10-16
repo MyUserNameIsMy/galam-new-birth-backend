@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CoursePublicationService } from './course-publication.service';
 import { CreateCoursePublicationDto } from './dto/create-course-publication.dto';
 import { UpdateCoursePublicationDto } from './dto/update-course-publication.dto';
 import { CoursePublicationEntity } from './entities/course-publication.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { CoursePublicationFilterDto } from './dto/course-publication-filter.dto';
 
 @ApiTags('Course publication')
 @Controller('course-publication')
@@ -28,8 +30,22 @@ export class CoursePublicationController {
   }
 
   @Get()
-  async findAll(): Promise<CoursePublicationEntity[]> {
-    return await this.coursePublicationService.findAll();
+  async findAll(
+    @Query() filter: CoursePublicationFilterDto,
+  ): Promise<CoursePublicationEntity[]> {
+    return await this.coursePublicationService.findAll(filter);
+  }
+
+  @Get('open-recruitment')
+  async findAllOpen(
+    @Query('page') page = 0,
+    @Query('limit') limit = 5,
+  ): Promise<{
+    course_publications: CoursePublicationEntity[];
+    page: number;
+    limit: number;
+  }> {
+    return await this.coursePublicationService.findAllOpen(page, limit);
   }
 
   @Get(':id')
@@ -51,5 +67,10 @@ export class CoursePublicationController {
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<{ message: string }> {
     return await this.coursePublicationService.remove(+id);
+  }
+
+  @Delete(':id/schedule')
+  async removeSchedule(@Param('id') id: string): Promise<{ message: string }> {
+    return await this.coursePublicationService.removeSchedule(+id);
   }
 }

@@ -4,14 +4,22 @@ import { OrganizationEntity } from './entities/organization.entity';
 import { CityEntity } from '../city/entities/city.entity';
 import { Point } from 'typeorm';
 import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class OrganizationService {
   async create(
     createOrganizationDto: CreateOrganizationDto,
     photo: Express.Multer.File,
+    account: any,
   ): Promise<OrganizationEntity> {
+    if (account.organization_id !== -1) {
+      throw new BadRequestException('Can not create new organization');
+    }
     try {
+      const user = await UserEntity.findOneOrFail({
+        where: { telegram_id: account.telegram_id },
+      });
       const city = await CityEntity.findOneOrFail({
         where: { id: createOrganizationDto.city_id },
       });
@@ -30,7 +38,10 @@ export class OrganizationService {
       organization.location = location;
       if (photo?.path) organization.photo_path = photo.path;
 
-      return await organization.save();
+      await organization.save();
+      user.organization = organization;
+      await user.save();
+      return organization;
     } catch (err) {
       throw new BadRequestException(err.message);
     }

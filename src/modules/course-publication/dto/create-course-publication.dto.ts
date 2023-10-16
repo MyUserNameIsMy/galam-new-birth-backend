@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
-import { Transform } from 'class-transformer';
+import {
+  IsDate,
+  IsEnum,
+  IsMilitaryTime,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { WeekDayEnum } from '../../../common/enums/week-day.enum';
 
 export class CreateCoursePublicationDto {
   @ApiProperty({ description: 'Start date of Course' })
@@ -24,4 +32,42 @@ export class CreateCoursePublicationDto {
   @IsNotEmpty()
   @IsNumber()
   course_id: number;
+
+  @ApiProperty()
+  @Type(() => LessonDto)
+  lessons_per_week: LessonDto[];
+}
+
+export class LessonDto {
+  @ApiProperty({ description: 'Week day' })
+  @IsNotEmpty()
+  @IsEnum(WeekDayEnum)
+  week_day: WeekDayEnum;
+
+  @ApiProperty({ description: 'Lesson Slots' })
+  @IsNotEmpty()
+  time_slots: TimeSlotDto[];
+
+  @ApiProperty({ description: 'Room' })
+  @IsNotEmpty()
+  @IsString()
+  room: string;
+}
+
+export class TimeSlotDto {
+  @ApiProperty({
+    description: 'Start Time of the Working day',
+    example: '11:00',
+  })
+  @IsNotEmpty()
+  @IsMilitaryTime()
+  start_time: string;
+
+  @ApiProperty({
+    description: 'End Time of the Working day',
+    example: '12:00',
+  })
+  @IsNotEmpty()
+  @IsMilitaryTime()
+  end_time: string;
 }
