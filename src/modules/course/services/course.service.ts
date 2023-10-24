@@ -3,6 +3,7 @@ import { CreateCourseDto } from '../dto/create-course.dto';
 import { UpdateCourseDto } from '../dto/update-course.dto';
 import { CourseEntity } from '../entities/course.entity';
 import { OrganizationEntity } from '../../organization/entities/organization.entity';
+import { CourseCategoryEntity } from '../entities/course-category.entity';
 
 @Injectable()
 export class CourseService {
@@ -11,7 +12,7 @@ export class CourseService {
       const organization = await OrganizationEntity.findOneOrFail({
         where: { id: createCourseDto.organization_id },
       });
-      const course_category = await OrganizationEntity.findOneOrFail({
+      const course_category = await CourseCategoryEntity.findOneOrFail({
         where: { id: createCourseDto.course_category_id },
       });
       const course = new CourseEntity();
