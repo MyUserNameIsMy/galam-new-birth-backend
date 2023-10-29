@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { RootAbstractEntity } from '../../../database/entities/root-abstract.entity';
 import { OrganizationEntity } from '../../organization/entities/organization.entity';
 import { CoursePublicationEntity } from '../../course-publication/entities/course-publication.entity';
-import { CourseCategoryEntity } from './course-category.entity';
+import { CourseCategoryEntity } from '../../course-category/entities/course-category.entity';
 import { CourseTypeEnum } from '../../../common/enums/course-type.enum';
 
 @Entity('courses')
@@ -34,8 +34,11 @@ export class CourseEntity extends RootAbstractEntity {
 
   @ManyToOne(() => OrganizationEntity, (organization) => organization.courses, {
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    nullable: false,
+    orphanedRowAction: 'delete',
   })
-  organization: OrganizationEntity;
+  organization!: OrganizationEntity;
 
   @ManyToOne(
     () => CourseCategoryEntity,

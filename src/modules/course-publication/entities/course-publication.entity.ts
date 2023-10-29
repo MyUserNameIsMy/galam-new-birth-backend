@@ -21,6 +21,9 @@ export class CoursePublicationEntity extends RootAbstractEntity {
   @Column({ type: 'timestamptz' })
   end_date: Date;
 
+  @Column({ type: 'int', default: 0 })
+  price: number;
+
   @ManyToMany(() => WeekDayEntity)
   @JoinTable()
   week_days: WeekDayEntity[];

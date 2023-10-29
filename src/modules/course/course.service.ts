@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateCourseDto } from '../dto/create-course.dto';
-import { UpdateCourseDto } from '../dto/update-course.dto';
-import { CourseEntity } from '../entities/course.entity';
-import { OrganizationEntity } from '../../organization/entities/organization.entity';
-import { CourseCategoryEntity } from '../entities/course-category.entity';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
+import { CourseEntity } from './entities/course.entity';
+import { OrganizationEntity } from '../organization/entities/organization.entity';
+import { CourseCategoryEntity } from '../course-category/entities/course-category.entity';
+import { CourseController } from './course.controller';
 
 @Injectable()
 export class CourseService {
@@ -56,13 +57,14 @@ export class CourseService {
 
   async remove(id: number): Promise<{ message: string }> {
     try {
-      const organization = await OrganizationEntity.findOneOrFail({
+      const course = await CourseEntity.findOneOrFail({
         where: { id },
       });
-      await organization.remove();
+      await course.remove();
     } catch (err) {
       throw new BadRequestException(err.message);
     }
+
     return {
       message: 'Successfully deleted',
     };

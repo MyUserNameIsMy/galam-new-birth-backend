@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CourseService } from './services/course.service';
+import { CourseService } from './course.service';
 import { CourseController } from './course.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseEntity } from './entities/course.entity';
-import { CourseCategoryEntity } from './entities/course-category.entity';
-import { CourseCategoryController } from './controllers/course-category.controller';
-import { CourseCategoryService } from './services/course-category.service';
+import { CourseCategoryEntity } from '../course-category/entities/course-category.entity';
+import { CourseCategoryController } from '../course-category/course-category.controller';
+import { CourseCategoryService } from '../course-category/course-category.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CourseEntity, CourseCategoryEntity])],

@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { RootAbstractEntity } from '../../../database/entities/root-abstract.entity';
 import { CoursePublicationEntity } from './course-publication.entity';
 import { WeekDayEnum } from '../../../common/enums/week-day.enum';
+import { ClassLanguageEnum } from '../../../common/enums/class-language.enum';
 
 @Entity('course_schedules')
 export class CourseScheduleEntity extends RootAbstractEntity {
@@ -19,6 +20,13 @@ export class CourseScheduleEntity extends RootAbstractEntity {
 
   @Column()
   room: string;
+
+  @Column({
+    type: 'enum',
+    enum: ClassLanguageEnum,
+    default: ClassLanguageEnum.MULTI_LANG,
+  })
+  language: ClassLanguageEnum;
 
   @ManyToOne(
     () => CoursePublicationEntity,

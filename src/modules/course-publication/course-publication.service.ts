@@ -11,7 +11,7 @@ import { CourseScheduleEntity } from './entities/course-schedule.entity';
 import { CoursePublicationFilterDto } from './dto/course-publication-filter.dto';
 import { WeekDayEntity } from '../../database/entities/week-day.entity';
 import { CoursePublicationStatusEnum } from '../../common/enums/course-publication-status.enum';
-import { CourseCategoryEntity } from '../course/entities/course-category.entity';
+import { CourseCategoryEntity } from '../course-category/entities/course-category.entity';
 
 @Injectable()
 export class CoursePublicationService {

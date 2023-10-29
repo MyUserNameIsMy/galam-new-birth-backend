@@ -15,12 +15,12 @@ import {
   UseInterceptors,
   Request,
 } from '@nestjs/common';
-import { OrganizationService } from '../organization.service';
-import { CreateOrganizationDto } from '../dto/create-organization.dto';
+import { OrganizationService } from './organization.service';
+import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { OrganizationEntity } from '../entities/organization.entity';
-import { UpdateOrganizationStatusDto } from '../dto/update-organization-status.dto';
+import { OrganizationEntity } from './entities/organization.entity';
+import { UpdateOrganizationStatusDto } from './dto/update-organization-status.dto';
 import type { Response } from 'express';
 import * as path from 'path';
 import { diskStorage } from 'multer';
