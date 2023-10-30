@@ -52,13 +52,24 @@ export class OrganizationService {
     const organizations = await OrganizationEntity.find();
     organizations.forEach(
       (item) =>
-        (item.photo_path = (UPLOAD_URL + item.photo_path).replace(/\\/g, '/')),
+        (item.photo_path = item.photo_path
+          ? (UPLOAD_URL + item.photo_path).replace(/\\/g, '/')
+          : null),
     );
     return organizations;
   }
 
   async findOne(id: number): Promise<OrganizationEntity> {
-    return await OrganizationEntity.findOneOrFail({ where: { id } });
+    const organization = await OrganizationEntity.findOneOrFail({
+      where: { id },
+    });
+    if (organization.photo_path) {
+      organization.photo_path = (UPLOAD_URL + organization.photo_path).replace(
+        /\\/g,
+        '/',
+      );
+    }
+    return organization;
   }
 
   //TODO: add status flow check
